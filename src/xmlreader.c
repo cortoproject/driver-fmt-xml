@@ -5,13 +5,8 @@
  *      Author: sander
  */
 
-#include "stdlib.h"
-#include "string.h"
-#include "assert.h"
+#include "corto/corto.h"
 #include "libxml/xmlreader.h"
-
-#include "corto_object.h"
-#include "corto_err.h"
 #include "xmlreader.h"
 
 static corto_bool xml_initialized = FALSE;
@@ -478,6 +473,3 @@ corto_xmlnode corto_xmlnodeGetChild(corto_xmlnode cnode, unsigned int childnode)
     }
     return 0;
 }
-
-
-

@@ -6,7 +6,7 @@
 #ifndef xml_H
 #define xml_H
 
-#include "corto.h"
+#include "corto/corto.h"
 #ifdef __cplusplus
 extern "C" {
 #endif

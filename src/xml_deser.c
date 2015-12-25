@@ -6,13 +6,7 @@
  */
 
 #include "xml_deser.h"
-#include "corto.h"
-#include "corto_class.h"
 #include "xmlreader.h"
-#include "corto_loader.h"
-
-#include "stdlib.h"
-#include "string.h"
 
 typedef struct deser_xmldata_s* deser_xmldata;
 typedef struct deser_xmldata_s {
@@ -140,9 +134,6 @@ int corto_deserXmlReference(const char* str, corto_type t, void* o, deser_xmldat
         *(corto_void**)o = 0;
     } else {
         corto_object ref;
-        corto_id fullname_1;
-        corto_id fullname_2;
-        corto_id fullname_3;
 
         ref = corto_resolve(data->scope, (corto_string)str);
         if (ref) {
@@ -151,12 +142,14 @@ int corto_deserXmlReference(const char* str, corto_type t, void* o, deser_xmldat
                 *(corto_void**)o = ref;
             } else {
                 xml_error(data, "reference to object '%s' of type '%s' does not match reference type '%s'.",
-                        corto_fullname(ref, fullname_1),
-                        corto_fullname(corto_typeof(ref), fullname_2),
-                        corto_fullname(t, fullname_3)); goto error;
+                        corto_fullpath(NULL, ref),
+                        corto_fullpath(NULL, corto_typeof(ref)),
+                        corto_fullpath(NULL, t));
+                goto error;
             }
         } else {
-            xml_error(data, "unresolved object '%s'.", str); goto error;
+            xml_error(data, "unresolved object '%s'.", str);
+            goto error;
         }
     }
 
@@ -171,8 +164,8 @@ int corto_deserXmlPrimitive(const char* str, corto_type t, void* o, deser_xmldat
     corto_type type;
 
     if (!str) {
-        corto_id fullname;
-        xml_error(data, "invalid value for primitive of type '%s'.", corto_fullname(t, fullname));
+        xml_error(data, "invalid value for primitive of type '%s'.",
+            corto_fullpath(NULL, t));
         goto error;
     }
     type = t;
@@ -186,8 +179,8 @@ int corto_deserXmlPrimitive(const char* str, corto_type t, void* o, deser_xmldat
         } else {
             /* Transform string to value using database transformations */
             if (corto_convert(corto_primitive(corto_string_o), (char**)&str, corto_primitive(t), &toValue)) {
-                corto_id fullname;
-                xml_error(data, "transformation from string to primitive type '%s' failed.", corto_fullname(t, fullname));
+                xml_error(data, "transformation from string to primitive type '%s' failed.",
+                    corto_fullpath(NULL, t));
                 goto error;
             } else {
                 /* Copy new value */
@@ -268,8 +261,9 @@ void* corto_deserXmlCollectionNewElement(deser_xmlElementData* data) {
         break;
     default:
         {
-            corto_id fullname;
-            xml_error(data->data, "cannot create element for type '%s' that is not a collection.", corto_fullname(data->t, fullname));
+            xml_error(data->data,
+              "cannot create element for type '%s' that is not a collection.",
+              corto_fullpath(NULL, data->t));
         }
         break;
     }
@@ -307,9 +301,12 @@ int corto_deserXmlCollectionInsertElement(corto_xmlnode node, void* o, deser_xml
 
             /* Cast string to key value */
             if (corto_convert(corto_primitive(corto_string_o), &key, corto_primitive(corto_rbtreeKeyType(*(corto_rbtree*)data->collection)), &toValue)) {
-                corto_id fullname;
-                xml_error(data->data, "transformation from string to primitive map keytype '%s' failed.",
-                        corto_fullname(corto_rbtreeKeyType(*(corto_rbtree*)data->collection), fullname));
+                xml_error(
+                  data->data,
+                  "transformation from string to primitive map keytype '%s' failed.",
+                  corto_fullpath(NULL,
+                      corto_rbtreeKeyType(*(corto_rbtree*)data->collection))
+                );
                 goto error;
             }
 
@@ -469,8 +466,9 @@ static int corto_deserXmlAttrWalk(corto_string ns, corto_string attr, corto_stri
             goto error;
         }
     } else {
-        corto_id fullname;
-        xml_error(userData->data, "type '%s' has no member '%s'.", corto_fullname(userData->t, fullname), attr);
+        xml_error(userData->data, "type '%s' has no member '%s'.",
+            corto_fullpath(NULL, userData->t),
+            attr);
         goto error;
     }
 
@@ -506,13 +504,13 @@ corto_string corto_deserXmlIsInlinedElement(corto_string type, deser_xmlMemberDa
 
             /* Compare fully qualified names */
             } else {
-                corto_id subtypeName;
-                corto_id typeName;
                 corto_object o;
 
                 o = corto_lookup(userData->data->scope, type);
                 if (o) {
-                    if (!strcmp(corto_fullname(subtype, subtypeName), corto_fullname(o, typeName))) {
+                    if (!strcmp(corto_fullpath(NULL, subtype),
+                                corto_fullpath(NULL, o)))
+                    {
                         result = corto_nameof(s->members.buffer[i]);
                         break;
                     }
@@ -552,8 +550,10 @@ int corto_deserXmlInlinedMember(corto_xmlnode node, corto_string name, deser_xml
         /* Set member as processed - so collection won't be parsed again. */
         corto_deserXmlMemberSet(memberName, userData->data);
     } else {
-        corto_id fullname;
-        xml_error(userData->data, "type '%s' has no member named- or inlined collection with subtype '%s'.", corto_fullname(userData->t, fullname), name);
+        xml_error(
+          userData->data,
+          "type '%s' has no member named- or inlined collection with subtype '%s'.",
+          corto_fullpath(NULL, userData->t), name);
         goto error;
     }
 
@@ -663,17 +663,20 @@ int corto_deserXmlObject(corto_xmlnode node, corto_string name, corto_string typ
     /* Lookup type */
     t = corto_deserXmlNsResolve(NULL, type, data);
     if (!t) {
-        xml_error(data, "unknown type '%s'.", type); goto error;
+        xml_error(data, "unknown type '%s'.", type);
+        goto error;
     } else if (!corto_instanceof(corto_type(corto_type_o), t)) {
-        corto_id id;
-        xml_error(data, "object '%s' is not a type", corto_fullname(t, id)); goto error;
+        xml_error(data, "object '%s' is not a type", corto_fullpath(NULL, t));
+        goto error;
     }
 
     /* Declare object */
     o = corto_deserXmlDeclare(data, name, t);
     corto_release(t); /* Free reference to t obtained by resolve */
     if (!o) {
-        xml_error(data, "failed to create '%s : %s' (%s)", name, type, corto_lasterr()); goto error;
+        xml_error(data, "failed to create '%s : %s' (%s)",
+            name, type, corto_lasterr());
+        goto error;
     }
     /* Deserialize value */
     data->cur = o;
@@ -684,7 +687,8 @@ int corto_deserXmlObject(corto_xmlnode node, corto_string name, corto_string typ
 
     /* Construct(finalize) object */
     if (corto_define(o)) {
-        xml_error(data, "failed to construct object '%s : %s'.", name, type); goto error;
+        xml_error(data, "failed to construct object '%s : %s'.", name, type);
+        goto error;
     }
 
     return 0;
@@ -848,12 +852,13 @@ int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_t
                 }
                 corto_deserXmlDataFree(&privateData);
             } else {
-                corto_id fullname;
-                xml_error(data, "Invalid super-tag: type '%s' has no base type.", corto_fullname(t, fullname));
+                xml_error(data, "Invalid super-tag: type '%s' has no base type.",
+                    corto_fullpath(NULL, t));
             }
         } else {
-            corto_id fullname;
-            xml_error(data, "Invalid super-tag: type-kind of '%s' does not support inheritance.", corto_fullname(t, fullname));
+            xml_error(data,
+              "Invalid super-tag: type-kind of '%s' does not support inheritance.",
+              corto_fullpath(NULL, t));
         }
 
     /* using */
@@ -951,4 +956,3 @@ int corto_deserXml(corto_string file, int argc, char* argv[], void* udata) {
 error:
     return -1;
 }
-
