@@ -5,8 +5,8 @@
  *      Author: sander
  */
 
-#include "xml_deser.h"
-#include "xmlreader.h"
+#include "xml/xml_deser.h"
+#include "xml/xmlreader.h"
 
 typedef struct deser_xmldata_s* deser_xmldata;
 typedef struct deser_xmldata_s {

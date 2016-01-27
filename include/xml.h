@@ -1,18 +1,21 @@
-/* include/xml.h
+/* xml.h
  *
  * This file is generated. Do not modify.
  */
 
-#ifndef xml_H
-#define xml_H
+#ifndef XML_H
+#define XML_H
 
 #include "corto/corto.h"
+#include "xml/_interface.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* $header() */
-/* You can put your own definitions here! */
+#include "xml/xmlreader.h"
+#include "xml/xml_deser.h"
 /* $end */
 
 #ifdef __cplusplus

@@ -89,14 +89,9 @@ int corto_xmlnodeWalkAttr(corto_xmlnode cnode, corto_xmlreaderWalkAttrCallback c
 int corto_xmlnodeWalk(corto_xmlnode cnode, corto_xmlreaderWalkCallback callback, void* userData);
 
 /* Count children of node */
-int corto_xmlnodehildrenCount(corto_xmlnode cnode);
+int corto_xmlnodeChildrenCount(corto_xmlnode cnode);
 
 /* Get child */
 corto_xmlnode corto_xmlnodeGetChild(corto_xmlnode cnode, unsigned int childnode);
-
-
-
-
-
 
 #endif /* SER_XML_READER_H_ */

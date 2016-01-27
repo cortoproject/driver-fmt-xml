@@ -7,7 +7,7 @@
 
 #include "corto/corto.h"
 #include "libxml/xmlreader.h"
-#include "xmlreader.h"
+#include "xml/xmlreader.h"
 
 static corto_bool xml_initialized = FALSE;
 
