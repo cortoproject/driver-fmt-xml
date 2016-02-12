@@ -5,9 +5,9 @@
  *      Author: sander
  */
 
-#include "xml/xml_deser.h"
+#include "corto/fmt/xml/xml_deser.h"
 
-int xmlMain(int argc, char* argv[]) {
+int cortomain(int argc, char* argv[]) {
     CORTO_UNUSED(argc);
     CORTO_UNUSED(argv);
     corto_loaderRegister("xml", corto_deserXml, NULL);
