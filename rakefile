@@ -1,7 +1,5 @@
 PACKAGE = 'corto/fmt/xml'
 
-NOCORTO = true
-USE_PACKAGE = ["corto"]
 INCLUDE = ["/usr/include/libxml2"]
 LIB = ["xml2"]
 CFLAGS = ["-Wunused-parameter"]

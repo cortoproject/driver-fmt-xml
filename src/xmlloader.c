@@ -7,7 +7,7 @@
 
 #include "corto/fmt/xml/xml_deser.h"
 
-int cortomain(int argc, char* argv[]) {
+int xmlMain(int argc, char* argv[]) {
     CORTO_UNUSED(argc);
     CORTO_UNUSED(argv);
     corto_loaderRegister("xml", corto_deserXml, NULL);
