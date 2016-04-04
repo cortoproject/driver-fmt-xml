@@ -359,7 +359,7 @@ int corto_deserXmlElement(corto_xmlnode node, deser_xmlElementData* userData) {
         }
 
     /* Element subtype is used as tagname */
-    } else if (corto_checkAttr(subtype, CORTO_ATTR_SCOPED) && !strcmp(corto_nameof(subtype), corto_xmlnodeName(node))) {
+    } else if (corto_checkAttr(subtype, CORTO_ATTR_SCOPED) && !strcmp(corto_idof(subtype), corto_xmlnodeName(node))) {
         deser_xmldata_s privateData;
 
         privateData = corto_deserXmlDataClone(userData->data);
@@ -498,8 +498,8 @@ corto_string corto_deserXmlIsInlinedElement(corto_string type, deser_xmlMemberDa
         m = s->members.buffer[i];
         if (m->type->kind == CORTO_COLLECTION) {
             subtype = ((corto_collection)m->type)->elementType;
-            if (corto_checkAttr(subtype, CORTO_ATTR_SCOPED) && !strcmp(corto_nameof(subtype), type)) {
-                result = corto_nameof(s->members.buffer[i]);
+            if (corto_checkAttr(subtype, CORTO_ATTR_SCOPED) && !strcmp(corto_idof(subtype), type)) {
+                result = corto_idof(s->members.buffer[i]);
                 break;
 
             /* Compare fully qualified names */
@@ -511,7 +511,7 @@ corto_string corto_deserXmlIsInlinedElement(corto_string type, deser_xmlMemberDa
                     if (!strcmp(corto_fullpath(NULL, subtype),
                                 corto_fullpath(NULL, o)))
                     {
-                        result = corto_nameof(s->members.buffer[i]);
+                        result = corto_idof(s->members.buffer[i]);
                         break;
                     }
                     corto_release(o);
@@ -822,7 +822,7 @@ int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_t
             goto error;
         }
 
-        name = corto_nameof(s);
+        name = corto_idof(s);
 
         /* resolve objects in scope */
         privateData = *data;
