@@ -6,7 +6,7 @@
 #ifndef CORTO_FMT_XML_H
 #define CORTO_FMT_XML_H
 
-#include "corto/corto.h"
+#include <corto/corto.h>
 
 #ifdef __cplusplus
 extern "C" {
