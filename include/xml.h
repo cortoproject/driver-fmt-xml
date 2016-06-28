@@ -8,13 +8,14 @@
 
 #include <corto/corto.h>
 
+/* $header() */
+#include "corto/fmt/xml/xmlreader.h"
+#include "corto/fmt/xml/xml_deser.h"
+/* $end */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* $header() */
-/* You can put your own definitions here! */
-/* $end */
 
 #ifdef __cplusplus
 }
