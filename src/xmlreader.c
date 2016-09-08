@@ -159,8 +159,6 @@ int corto_xmlnodeInt(corto_xmlnode cnode, int* out) {
     if (str) {
         *out = atoi(str);
         result = 0;
-    } else {
-        corto_seterr("node '%s' has no content (expected integer).", node->name);
     }
 
     return result;
@@ -180,8 +178,6 @@ int corto_xmlnodeUint(corto_xmlnode cnode, unsigned int* out) {
     if (str) {
         *out = atoi(str);
         result = 0;
-    } else {
-        corto_seterr("node '%s' has no content (expected integer).", node->name);
     }
 
     return result;
@@ -201,8 +197,6 @@ float corto_xmlnodeFloat(corto_xmlnode cnode, float* out) {
     if (str) {
         *out = (float)atof(str);
         result = 0;
-    } else {
-        corto_seterr("node '%s' has no content (expected float).", node->name);
     }
 
     return result;
@@ -227,11 +221,8 @@ int corto_xmlnodeBool(corto_xmlnode cnode, unsigned int* out) {
             *out = 0;
         } else {
             result = -1;
-            corto_seterr("invalid boolean value '%s' in node '%s'.", str, node->name);
         }
         free(str);
-    } else {
-        corto_seterr("node '%s' has no content (expected integer).", node->name);
     }
 
     return result;
@@ -243,9 +234,6 @@ char* corto_xmlnodeStr(corto_xmlnode cnode) {
     xmlNodePtr node = (xmlNodePtr)cnode;
 
     str = (char*)xmlNodeGetContent(node);
-    if (!str) {
-        corto_seterr("node %s has no content (expected string).", node->name);
-    }
 
     return str;
 }
@@ -265,8 +253,6 @@ int corto_xmlnodeAttrChar(corto_xmlnode cnode, const char* attribute, char* out)
         *out = *str;
         free(str);
         result = 0;
-    } else {
-        corto_seterr("char attribute '%s' not found in node '%s'.", attribute, node->name);
     }
 
     return result;
@@ -287,8 +273,6 @@ int corto_xmlnodeAttrInt(corto_xmlnode cnode, const char* attribute, int* out) {
         *out = atoi(str);
         free(str);
         result = 0;
-    } else {
-        corto_seterr("integer attribute '%s' not found in node '%s'.", attribute, node->name);
     }
 
     return result;
@@ -309,8 +293,6 @@ int corto_xmlnodeAttrUint(corto_xmlnode cnode, const char* attribute, unsigned i
         *out = atoi(str);
         free(str);
         result = 0;
-    } else {
-        corto_seterr("integer attribute '%s' not found in node '%s'.", attribute, node->name);
     }
 
     return result;
@@ -331,8 +313,6 @@ float corto_xmlnodeAttrFloat(corto_xmlnode cnode, const char* attribute, float* 
         *out = (float)atof(str);
         free(str);
         result = 0;
-    } else {
-        corto_seterr("float attribute '%s' not found in node '%s'.", attribute, node->name);
     }
 
     return result;
@@ -356,11 +336,8 @@ int corto_xmlnodeAttrBool(corto_xmlnode cnode, const char* attribute, unsigned i
             *out = 0;
         } else {
             result = -1;
-            corto_seterr("invalid boolean value '%s' in attribute '%s' of node '%s'.", str, attribute, node->name);
         }
         free(str);
-    } else {
-        corto_seterr("boolean attribute '%s' not found in node '%s'.", attribute, node->name);
     }
 
     return result;
@@ -372,9 +349,6 @@ char* corto_xmlnodeAttrStr(corto_xmlnode cnode, const char* attribute) {
     xmlNodePtr node = (xmlNodePtr)cnode;
 
     str = (char*)xmlGetProp(node, (xmlChar*)attribute);
-    if (!str) {
-        corto_seterr("string attribute '%s' not found in node '%s'.", attribute, node->name);
-    }
 
     return str;
 }
