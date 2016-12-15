@@ -116,16 +116,7 @@ void corto_deserXmlDataFree(deser_xmldata data) {
 
 /* (Forward) declare object */
 corto_object corto_deserXmlDeclare(deser_xmldata data, corto_string name, corto_type t) {
-    corto_object o;
-
-    /* Find or create object */
-    if (!(o = corto_lookup(data->scope, name))) {
-        o = corto_declareChild(data->scope, name, t);
-    } else {
-        corto_release(o);
-    }
-
-    return o;
+    return corto_declareChild(data->scope, name, t);;
 }
 
 /* Deserialize reference */
@@ -797,7 +788,7 @@ int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_t
             name = corto_xmlnodeAttrStr(node, "name");
 
             /* first try to resolve scope */
-            s = corto_lookup(data->scope, name);
+            s = corto_find(data->scope, name, CORTO_FIND_DEFAULT);
             if (!s) {
                 if (!strcmp(oper, "package")) {
                     s = corto_declareChild(data->scope, name, corto_package_o);
