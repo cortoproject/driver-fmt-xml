@@ -1,7 +1,0 @@
-PACKAGE = 'corto/fmt/xml'
-
-INCLUDE = ["/usr/include/libxml2"]
-LIB = ["xml2"]
-CFLAGS = ["-Wunused-parameter"]
-
-require "#{ENV['CORTO_BUILD']}/package"
