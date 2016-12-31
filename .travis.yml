@@ -1,0 +1,19 @@
+language: c
+
+sudo: false
+
+install:
+  - cd ..
+  - mkdir cortoproject
+  - mv xml cortoproject/xml
+  - cd cortoproject
+  - git clone https://github.com/cortoproject/corto.git
+  - git clone https://github.com/cortoproject/c-binding.git
+  - git clone https://github.com/cortoproject/json.git
+  - |+
+    echo 'COMPONENTS = %w(corto c-binding json xml)
+    require "#{ENV["CORTO_BUILD"]}/forward"' > rakefile
+  - source corto/configure
+  - rake
+
+script: []
