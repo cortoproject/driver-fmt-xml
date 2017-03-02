@@ -8,6 +8,10 @@
 
 #include <corto/fmt/xml/xml.h>
 
+/* $header() */
+/* Enter code outside of main here. */
+/* $end */
+
 int xmlMain(int argc, char *argv[]) {
 /* $begin(main) */
     CORTO_UNUSED(argc);
