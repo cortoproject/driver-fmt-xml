@@ -1,0 +1,9 @@
+{
+  "id" : "corto/ext/xml",
+  "type" : "package",
+  "value" : {
+    "description" : "XML file extension",
+    "version" : "1.0.0",
+    "dependencies" : ["corto/fmt/xml"]
+  }
+}

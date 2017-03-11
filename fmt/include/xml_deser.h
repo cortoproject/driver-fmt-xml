@@ -10,6 +10,6 @@
 
 #include "corto/corto.h"
 
-int corto_deserXml(corto_string file, int argc, char* argv[], void* udata);
+int corto_deserXml(corto_string file);
 
 #endif /* CORE_DESERXML_H_ */

@@ -907,12 +907,8 @@ error:
 }
 
 /* Deserialize xml */
-int corto_deserXml(corto_string file, int argc, char* argv[], void* udata) {
+int corto_deserXml(corto_string file) {
     deser_xmldata_s data;
-
-    CORTO_UNUSED(udata);
-    CORTO_UNUSED(argc);
-    CORTO_UNUSED(argv);
 
     /* Load reader */
     data.reader = corto_xmlreaderNew(file, "meta");
