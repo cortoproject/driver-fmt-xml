@@ -8,8 +8,6 @@
 
 #include <corto/corto.h>
 #include <corto/ext/xml/_project.h>
-#include <corto/core/c/c.h>
-#include <corto/lang/c/c.h>
 #include <corto/fmt/xml/xml.h>
 
 /* $header() */

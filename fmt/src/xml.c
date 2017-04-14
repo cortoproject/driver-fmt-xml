@@ -16,7 +16,6 @@ int xmlMain(int argc, char *argv[]) {
 /* $begin(main) */
     CORTO_UNUSED(argc);
     CORTO_UNUSED(argv);
-    corto_loaderRegister("xml", corto_deserXml, NULL);
     return 0;
 /* $end */
 }

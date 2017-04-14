@@ -26,8 +26,8 @@ typedef enum corto_deserXmlScope {
     XML_MEMBER
 }corto_deserXmlScope;
 
-#define xml_error(data, ...) fprintf(stderr, "%s: %d: ", data->file, data->line); corto_error(__VA_ARGS__);
-#define xml_warning(data, ...) fprintf(stderr, "%s: %d: ", data->file, data->line); corto_warning(__VA_ARGS__);
+#define xml_error(data, ...) corto_error_fl(data->file, data->line, __VA_ARGS__);
+#define xml_warning(data, ...) corto_warning_fl(data->file, data->line, __VA_ARGS__);
 
 #define XML_NODE(nodePtr, data) (data)->line = corto_xmlnodeLine(nodePtr); (data)->node = nodePtr;
 
@@ -414,7 +414,7 @@ int corto_deserXmlCollection(corto_xmlnode node, corto_type t, void* o, corto_bo
     walkData.count = 0;
     walkData.othersAllowed = othersAllowed; /* Don't allow members or elements from other collections within scope */
     if (!corto_xmlnodeWalkChildren(node, (corto_xmlreaderWalkCallback)corto_deserXmlElement, &walkData)) {
-        xml_error(data, "An error occured while deserializing elements of collection '%s'.", corto_xmlnodeName(node));
+        xml_error(data, "An error occured while deserializing elements of collection '%s'", corto_xmlnodeName(node));
         goto error;
     }
 
@@ -654,7 +654,7 @@ int corto_deserXmlObject(corto_xmlnode node, corto_string name, corto_string typ
     /* Lookup type */
     t = corto_deserXmlNsResolve(NULL, type, data);
     if (!t) {
-        xml_error(data, "unknown type '%s'.", type);
+        xml_error(data, "unknown type '%s'", type);
         goto error;
     } else if (!corto_instanceof(corto_type(corto_type_o), t)) {
         xml_error(data, "object '%s' is not a type", corto_fullpath(NULL, t));
@@ -678,7 +678,7 @@ int corto_deserXmlObject(corto_xmlnode node, corto_string name, corto_string typ
 
     /* Construct(finalize) object */
     if (corto_define(o)) {
-        xml_error(data, "failed to construct object '%s : %s'.", name, type);
+        xml_error(data, "failed to construct object '%s : %s': %s", name, type, corto_lasterr());
         goto error;
     }
 
@@ -822,7 +822,7 @@ int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_t
 
         /* Walk root */
         if (!corto_xmlnodeWalkChildren(node, (corto_xmlreaderWalkCallback)corto_deserXmlNode, &privateData)) {
-            xml_error(data, "error(s) occured while deserializing scope '%s'.", name); goto error;
+            goto error;
         }
 
         corto_deserXmlDataFree(&privateData);
@@ -857,7 +857,7 @@ int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_t
         corto_string ns = corto_xmlnodeAttrStr(node, "namespace");
         corto_deserXmlNsUse(ns, data);
     } else {
-        xml_warning(data, "unknown operation '%s'.", oper);
+        xml_warning(data, "unknown operation '%s'", oper);
     }
 
     return 0;
@@ -883,7 +883,7 @@ int corto_deserXmlNode(corto_xmlnode node, deser_xmldata data) {
                 goto error;
             }
         } else {
-            xml_warning(data, "unknown namespace '%s'.", ns);
+            xml_warning(data, "unknown namespace '%s'", ns);
         }
     } else {
         /* Deserialize object */
@@ -921,7 +921,7 @@ int corto_deserXml(corto_string file) {
         data.using = corto_llNew();
 
         if (!corto_xmlnodeWalkChildren(data.node, (corto_xmlreaderWalkCallback)corto_deserXmlNode, &data)) {
-            corto_error("error(s) occured while deserializing file '%s'.", file);
+            corto_seterr("error(s) occurred while parsing");
             goto error;
         }
 
