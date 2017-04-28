@@ -169,7 +169,7 @@ int corto_deserXmlPrimitive(const char* str, corto_type t, void* o, deser_xmldat
             }
         } else {
             /* Transform string to value using database transformations */
-            if (corto_convert(corto_primitive(corto_string_o), (char**)&str, corto_primitive(t), &toValue)) {
+            if (corto_ptr_cast(corto_primitive(corto_string_o), (char**)&str, corto_primitive(t), &toValue)) {
                 xml_error(data, "transformation from string to primitive type '%s' failed.",
                     corto_fullpath(NULL, t));
                 goto error;
@@ -291,7 +291,7 @@ int corto_deserXmlCollectionInsertElement(corto_xmlnode node, void* o, deser_xml
             key = corto_xmlnodeAttrStr(node, "key");
 
             /* Cast string to key value */
-            if (corto_convert(corto_primitive(corto_string_o), &key, corto_primitive(corto_rbtreeKeyType(*(corto_rbtree*)data->collection)), &toValue)) {
+            if (corto_ptr_cast(corto_primitive(corto_string_o), &key, corto_primitive(corto_rbtreeKeyType(*(corto_rbtree*)data->collection)), &toValue)) {
                 xml_error(
                   data->data,
                   "transformation from string to primitive map keytype '%s' failed.",
