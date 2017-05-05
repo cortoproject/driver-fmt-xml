@@ -47,7 +47,7 @@ void corto_deserXmlMemberSet(corto_string name, deser_xmldata data) {
 /* Check if attribute is parsed */
 int corto_deserXmlMemberCheck(corto_string name, deser_xmldata data) {
     if (data->attrParsed) {
-        corto_string result = (corto_string)corto_llFind(data->attrParsed, (corto_walkAction)strcmp, name);
+        corto_string result = (corto_string)corto_llFind(data->attrParsed, (corto_elementWalk_cb)strcmp, name);
         return result != 0;
     } else {
         return 0;
@@ -82,8 +82,8 @@ corto_object corto_deserXmlNsResolve(corto_object src, corto_string name, deser_
             corto_iter iter;
 
             iter = corto_llIter(data->using);
-            while(!o && corto_iterHasNext(&iter)) {
-                ns = corto_iterNext(&iter);
+            while(!o && corto_iter_hasNext(&iter)) {
+                ns = corto_iter_next(&iter);
                 o = corto_lookup(ns, name);
             }
         }
