@@ -91,6 +91,13 @@ int corto_xmlnodeWalk(corto_xmlnode cnode, corto_xmlreaderWalkCallback callback,
 /* Count children of node */
 int corto_xmlnodeChildrenCount(corto_xmlnode cnode);
 
+/* Specify callback for each kind of node */
+#define CORTO_XML_CALLBACK_MAX (21)
+#define CORTO_XML_ELEMENT_NODE (1)
+#define CORTO_XML_ATTRIBUTE_NODE (2)
+#define CORTO_XML_TEXT_NODE (3)
+int corto_xmlnodeWalkAll(corto_xmlnode cnode, corto_xmlreaderWalkCallback* callbacks, void* userData);
+
 /* Get child */
 corto_xmlnode corto_xmlnodeGetChild(corto_xmlnode cnode, unsigned int childnode);
 

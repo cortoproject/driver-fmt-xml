@@ -122,7 +122,11 @@ short int corto_xmlnodeLine(corto_xmlnode cnode) {
 /* Get content of node */
 char* corto_xmlnodeContent(corto_xmlnode cnode) {
     xmlNodePtr node = (xmlNodePtr)cnode;
-    return (char*)xmlNodeGetContent(node);
+    if (node->type == XML_TEXT_NODE) {
+        return (char*)node->content;
+    } else {
+        return (char*)xmlNodeGetContent(node);
+    }
 }
 
 /* Get root of doc */
@@ -411,6 +415,24 @@ int corto_xmlnodeWalk(corto_xmlnode cnode, corto_xmlreaderWalkCallback callback,
     }
 
     return result;
+}
+
+int corto_xmlnodeWalkAll(corto_xmlnode cnode, corto_xmlreaderWalkCallback* callbacks, void* userData) {
+    int result = 1;
+    xmlNodePtr node = (xmlNodePtr)cnode;
+
+    node = node->children;
+    while(node) {
+        corto_xmlreaderWalkCallback callback = callbacks[node->type];
+        if (callback) {
+            if (!(result = callback(node, userData))) {
+                break;
+            }
+        }
+        node = node->next;
+    }
+
+    return result;    
 }
 
 /* Count children of node */
