@@ -18,7 +18,7 @@ typedef struct deser_xmldata_s {
     corto_uint32 line;
     corto_ll attrParsed;
     corto_ll using;
-}deser_xmldata_s;
+} deser_xmldata_s;
 
 typedef enum corto_deserXmlScope {
     XML_OBJECT,
@@ -26,8 +26,8 @@ typedef enum corto_deserXmlScope {
     XML_MEMBER
 }corto_deserXmlScope;
 
-#define xml_error(data, ...) fprintf(stderr, "%s: %d: ", data->file, data->line); corto_error(__VA_ARGS__);
-#define xml_warning(data, ...) fprintf(stderr, "%s: %d: ", data->file, data->line); corto_warning(__VA_ARGS__);
+#define xml_error(data, ...) corto_error_fl(data->file, data->line, __VA_ARGS__);
+#define xml_warning(data, ...) corto_warning_fl(data->file, data->line, __VA_ARGS__);
 
 #define XML_NODE(nodePtr, data) (data)->line = corto_xmlnodeLine(nodePtr); (data)->node = nodePtr;
 
@@ -39,15 +39,15 @@ int corto_deserXmlNode(corto_xmlnode node, deser_xmldata data);
 /* Set parsed attribute */
 void corto_deserXmlMemberSet(corto_string name, deser_xmldata data) {
     if (!data->attrParsed) {
-        data->attrParsed = corto_llNew();
+        data->attrParsed = corto_ll_new();
     }
-    corto_llInsert(data->attrParsed, name);
+    corto_ll_insert(data->attrParsed, name);
 }
 
 /* Check if attribute is parsed */
 int corto_deserXmlMemberCheck(corto_string name, deser_xmldata data) {
     if (data->attrParsed) {
-        corto_string result = (corto_string)corto_llFind(data->attrParsed, (corto_walkAction)strcmp, name);
+        corto_string result = (corto_string)corto_ll_find(data->attrParsed, (corto_elementWalk_cb)strcmp, name);
         return result != 0;
     } else {
         return 0;
@@ -58,14 +58,14 @@ int corto_deserXmlMemberCheck(corto_string name, deser_xmldata data) {
 void corto_deserXmlNsUse(corto_string ns, deser_xmldata data) {
     corto_object o;
     if (!data->using) {
-        data->using = corto_llNew();
+        data->using = corto_ll_new();
     }
 
     o = corto_lookup(data->scope, ns);
     if (!o) {
         xml_error(data, "namespace '%s' unresolved.", ns);
     } else {
-        corto_llAppend(data->using, o);
+        corto_ll_append(data->using, o);
         corto_release(o);
     }
 }
@@ -81,9 +81,9 @@ corto_object corto_deserXmlNsResolve(corto_object src, corto_string name, deser_
         if (data->using) {
             corto_iter iter;
 
-            iter = corto_llIter(data->using);
-            while(!o && corto_iterHasNext(&iter)) {
-                ns = corto_iterNext(&iter);
+            iter = corto_ll_iter(data->using);
+            while(!o && corto_iter_hasNext(&iter)) {
+                ns = corto_iter_next(&iter);
                 o = corto_lookup(ns, name);
             }
         }
@@ -106,7 +106,7 @@ deser_xmldata_s corto_deserXmlDataClone(deser_xmldata data) {
 /* Free deserdata */
 void corto_deserXmlDataFree(deser_xmldata data) {
     if (data->attrParsed) {
-        corto_llFree(data->attrParsed);
+        corto_ll_free(data->attrParsed);
         data->attrParsed = (void*)-1; /* Will crash if attempts are made to dereference it */
     }
     if (data->scope) {
@@ -169,7 +169,7 @@ int corto_deserXmlPrimitive(const char* str, corto_type t, void* o, deser_xmldat
             }
         } else {
             /* Transform string to value using database transformations */
-            if (corto_convert(corto_primitive(corto_string_o), (char**)&str, corto_primitive(t), &toValue)) {
+            if (corto_ptr_cast(corto_primitive(corto_string_o), (char**)&str, corto_primitive(t), &toValue)) {
                 xml_error(data, "transformation from string to primitive type '%s' failed.",
                     corto_fullpath(NULL, t));
                 goto error;
@@ -199,10 +199,10 @@ int corto_deserXmlCollectionNew(corto_type t, void* o) {
         ((corto_objectseq*)o)->buffer = 0;
         break;
     case CORTO_LIST:
-        *((corto_ll*)o) = corto_llNew();
+        *((corto_ll*)o) = corto_ll_new();
         break;
     case CORTO_MAP:
-        *((corto_rbtree*)o) = corto_rbtreeNew(((corto_map)ctype)->keyType);
+        *((corto_rbtree*)o) = corto_rb_new(((corto_map)ctype)->keyType);
         break;
     default:
         corto_error("parser error: not a valid collection kind for 'corto_deserXmlCollectionNew'.");
@@ -280,7 +280,7 @@ int corto_deserXmlCollectionInsertElement(corto_xmlnode node, void* o, deser_xml
         break;
     case CORTO_LIST:
         /* Insert element in list */
-        corto_llAppend(*(corto_ll*)data->collection, o);
+        corto_ll_append(*(corto_ll*)data->collection, o);
         break;
     case CORTO_MAP:
         {
@@ -291,18 +291,18 @@ int corto_deserXmlCollectionInsertElement(corto_xmlnode node, void* o, deser_xml
             key = corto_xmlnodeAttrStr(node, "key");
 
             /* Cast string to key value */
-            if (corto_convert(corto_primitive(corto_string_o), &key, corto_primitive(corto_rbtreeKeyType(*(corto_rbtree*)data->collection)), &toValue)) {
+            if (corto_ptr_cast(corto_primitive(corto_string_o), &key, corto_primitive(corto_rb_keyType(*(corto_rbtree*)data->collection)), &toValue)) {
                 xml_error(
                   data->data,
                   "transformation from string to primitive map keytype '%s' failed.",
                   corto_fullpath(NULL,
-                      corto_rbtreeKeyType(*(corto_rbtree*)data->collection))
+                      corto_rb_keyType(*(corto_rbtree*)data->collection))
                 );
                 goto error;
             }
 
             /* Insert element in map */
-            corto_rbtreeSet(*(corto_rbtree*)data->collection, toValue, o);
+            corto_rb_set(*(corto_rbtree*)data->collection, toValue, o);
             break;
         }
     default:
@@ -327,7 +327,7 @@ int corto_deserXmlElement(corto_xmlnode node, deser_xmlElementData* userData) {
     subtype = ((corto_collection)ctype)->elementType;
 
     /* Check if element belongs to collection */
-    if (corto_xmlnodeNs(node) && !strcmp(corto_xmlnodeNs(node), "meta")) {
+    if (corto_xmlnodeNs(node) && !strcmp(corto_xmlnodeNs(node), "corto")) {
         if (!strcmp(corto_xmlnodeName(node), "object") || !strcmp(corto_xmlnodeName(node), "element")) {
             /* Acquire pointer to new element */
             o = corto_deserXmlCollectionNewElement(userData);
@@ -344,7 +344,7 @@ int corto_deserXmlElement(corto_xmlnode node, deser_xmlElementData* userData) {
             if (userData->othersAllowed) {
                 goto ok;
             } else {
-                xml_error(userData->data, "invalid meta-tag for element (expected 'meta:object', 'meta:element' or elementType name).");
+                xml_error(userData->data, "invalid corto-tag for element (expected 'corto:object', 'corto:element' or elementType name).");
                 goto error;
             }
         }
@@ -414,7 +414,7 @@ int corto_deserXmlCollection(corto_xmlnode node, corto_type t, void* o, corto_bo
     walkData.count = 0;
     walkData.othersAllowed = othersAllowed; /* Don't allow members or elements from other collections within scope */
     if (!corto_xmlnodeWalkChildren(node, (corto_xmlreaderWalkCallback)corto_deserXmlElement, &walkData)) {
-        xml_error(data, "An error occured while deserializing elements of collection '%s'.", corto_xmlnodeName(node));
+        xml_error(data, "An error occured while deserializing elements of collection '%s'", corto_xmlnodeName(node));
         goto error;
     }
 
@@ -559,7 +559,7 @@ static int corto_deserXmlMemberWalk(corto_xmlnode node, deser_xmlMemberData user
 
     XML_NODE(node, userData->data);
 
-    if (corto_xmlnodeNs(node) && !strcmp(corto_xmlnodeNs(node), "meta")) {
+    if (corto_xmlnodeNs(node) && !strcmp(corto_xmlnodeNs(node), "corto")) {
         if (corto_deserXmlMetaExt(node, XML_MEMBER, userData->t, userData->o, userData->data)) {
             goto error;
         }
@@ -575,7 +575,7 @@ static int corto_deserXmlMemberWalk(corto_xmlnode node, deser_xmlMemberData user
                 goto error;
             }
             if (privateData.attrParsed) {
-                corto_llFree(privateData.attrParsed);
+                corto_ll_free(privateData.attrParsed);
             }
         } else {
             if (corto_deserXmlInlinedMember(node, (corto_string)corto_xmlnodeName(node), userData)) {
@@ -654,7 +654,7 @@ int corto_deserXmlObject(corto_xmlnode node, corto_string name, corto_string typ
     /* Lookup type */
     t = corto_deserXmlNsResolve(NULL, type, data);
     if (!t) {
-        xml_error(data, "unknown type '%s'.", type);
+        xml_error(data, "unknown type '%s'", type);
         goto error;
     } else if (!corto_instanceof(corto_type(corto_type_o), t)) {
         xml_error(data, "object '%s' is not a type", corto_fullpath(NULL, t));
@@ -678,7 +678,7 @@ int corto_deserXmlObject(corto_xmlnode node, corto_string name, corto_string typ
 
     /* Construct(finalize) object */
     if (corto_define(o)) {
-        xml_error(data, "failed to construct object '%s : %s'.", name, type);
+        xml_error(data, "failed to construct object '%s : %s': %s", name, type, corto_lasterr());
         goto error;
     }
 
@@ -687,12 +687,12 @@ error:
     return -1;
 }
 
-/* Deserialize meta-directive */
+/* Deserialize corto-directive */
 int corto_deserXmlMeta(corto_xmlnode node, corto_deserXmlScope scope, deser_xmldata data) {
     return corto_deserXmlMetaExt(node, scope, 0, 0, data);
 }
 
-/* Deserialize meta-directive */
+/* Deserialize corto-directive */
 int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_type t, void* o, deser_xmldata data) {
     corto_string oper;
     corto_string type;
@@ -701,7 +701,7 @@ int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_t
 
     oper = (corto_string)corto_xmlnodeName(node);
 
-    /* meta:object */
+    /* corto:object */
     if (!strcmp(oper, "object")) {
         type = corto_xmlnodeAttrStr(node, "type");
 
@@ -749,7 +749,7 @@ int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_t
                 free(name);
                 corto_release(t);
             } else {
-                xml_error(data, "missing value-element for meta:object element.");
+                xml_error(data, "missing value-element for corto:object element.");
                 goto error;
             }
         }
@@ -764,18 +764,18 @@ int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_t
             goto error;
         }
 
-    /* meta:include */
+    /* corto:include */
     } else if (!strcmp(oper, "include")) {
         corto_string filename = corto_xmlnodeAttrStr(node, "file");
         if (filename) {
             corto_load(filename, 0, NULL);
             free(filename);
         } else {
-            xml_error(data, "missing 'file' attribute for meta:include.");
+            xml_error(data, "missing 'file' attribute for corto:include.");
             goto error;
         }
 
-    /* meta:scope */
+    /* corto:scope */
     } else if (!strcmp(oper, "scope") || !strcmp(oper, "package")) {
         corto_object s;
         deser_xmldata_s privateData;
@@ -809,7 +809,7 @@ int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_t
             corto_claim(s);
         } else {
             s = NULL;
-            xml_error(data, "invalid use of meta:scope.");
+            xml_error(data, "invalid use of corto:scope.");
             goto error;
         }
 
@@ -822,12 +822,12 @@ int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_t
 
         /* Walk root */
         if (!corto_xmlnodeWalkChildren(node, (corto_xmlreaderWalkCallback)corto_deserXmlNode, &privateData)) {
-            xml_error(data, "error(s) occured while deserializing scope '%s'.", name); goto error;
+            goto error;
         }
 
         corto_deserXmlDataFree(&privateData);
 
-    /* meta:super */
+    /* corto:super */
     } else if (!strcmp(oper, "super")) {
         /* Check if type supports inheritance */
         if (!corto_class_instanceof(corto_class_o, corto_typeof(t))) {
@@ -857,7 +857,7 @@ int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_t
         corto_string ns = corto_xmlnodeAttrStr(node, "namespace");
         corto_deserXmlNsUse(ns, data);
     } else {
-        xml_warning(data, "unknown operation '%s'.", oper);
+        xml_warning(data, "unknown operation '%s'", oper);
     }
 
     return 0;
@@ -877,13 +877,13 @@ int corto_deserXmlNode(corto_xmlnode node, deser_xmldata data) {
 
     ns = (corto_string)corto_xmlnodeNs(node);
     if (ns) {
-        /* Deserialize meta-directive */
-        if (!strcmp(ns, "meta")) {
+        /* Deserialize corto-directive */
+        if (!strcmp(ns, "corto")) {
             if (corto_deserXmlMeta(node, XML_OBJECT, &privateData)) {
                 goto error;
             }
         } else {
-            xml_warning(data, "unknown namespace '%s'.", ns);
+            xml_warning(data, "unknown namespace '%s'", ns);
         }
     } else {
         /* Deserialize object */
@@ -911,26 +911,26 @@ int corto_deserXml(corto_string file) {
     deser_xmldata_s data;
 
     /* Load reader */
-    data.reader = corto_xmlreaderNew(file, "meta");
+    data.reader = corto_xmlreaderNew(file, "corto");
     if (data.reader) {
         data.node = corto_xmlreaderRoot(data.reader);
         data.scope = root_o;
         data.file = file;
         data.line = 0;
         data.attrParsed = 0;
-        data.using = corto_llNew();
+        data.using = corto_ll_new();
 
         if (!corto_xmlnodeWalkChildren(data.node, (corto_xmlreaderWalkCallback)corto_deserXmlNode, &data)) {
-            corto_error("error(s) occured while deserializing file '%s'.", file);
+            corto_seterr("error(s) occurred while parsing");
             goto error;
         }
 
         /* Free using */
-        corto_llFree(data.using);
+        corto_ll_free(data.using);
 
         /* Free attrParsed */
         if (data.attrParsed) {
-            corto_llFree(data.attrParsed);
+            corto_ll_free(data.attrParsed);
         };
 
         /* Free reader */

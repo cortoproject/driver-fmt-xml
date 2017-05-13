@@ -6,6 +6,7 @@
     "version" : "1.0.0",
     "cflags" : ["-Wunused-parameter"],
     "include" : ["/usr/include/libxml2"],
-    "lib": ["xml2"]
+    "lib": ["xml2"],
+    "noapi": true
   }
 }
