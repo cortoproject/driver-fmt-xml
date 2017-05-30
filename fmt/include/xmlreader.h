@@ -10,8 +10,8 @@
 
 typedef struct corto_xmlreader_s* corto_xmlreader;
 typedef void* corto_xmlnode;
-typedef int (*corto_xmlreaderWalkCallback)(corto_xmlnode node, void* udata);
-typedef int (*corto_xmlreaderWalkAttrCallback)(corto_string attr, corto_string ns, corto_string content, void* udata);
+typedef int (*corto_xmlreaderWalkCallback)(corto_xmlnode node, void* ctx);
+typedef int (*corto_xmlreaderWalkAttrCallback)(corto_string attr, corto_string ns, corto_string content, void* ctx);
 
 /* Open xml memory */
 corto_xmlreader corto_xmlMemoryReaderNew(const char* str, const char* rootElement);

@@ -9,7 +9,7 @@
 #include <corto/ext/xml/xml.h>
 
 /* $header() */
-static int xml_loadFile(corto_string file, int argc, char* argv[], void* udata) {
+static int xml_loadFile(corto_string file, int argc, char* argv[], void* ctx) {
     return corto_deserXml(file);
 }
 /* $end */
