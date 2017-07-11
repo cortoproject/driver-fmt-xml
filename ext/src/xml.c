@@ -17,7 +17,7 @@ static int xml_loadFile(corto_string file, int argc, char* argv[], void* ctx) {
 int xmlMain(int argc, char *argv[]) {
 /* $begin(main) */
 
-    corto_loaderRegister("xml", xml_loadFile, NULL);
+    corto_load_register("xml", xml_loadFile, NULL);
 
     return 0;
 /* $end */
