@@ -6,7 +6,7 @@
  * when the file is regenerated.
  */
 
-#include <corto/fmt/xml/xml.h>
+#include <driver/fmt/xml/xml.h>
 
 /* $header() */
 /* Enter code outside of main here. */

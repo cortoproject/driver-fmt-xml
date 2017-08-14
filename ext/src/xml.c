@@ -6,7 +6,7 @@
  * when the file is regenerated.
  */
 
-#include <corto/ext/xml/xml.h>
+#include <driver/ext/xml/xml.h>
 
 /* $header() */
 static int xml_loadFile(corto_string file, int argc, char* argv[], void* ctx) {

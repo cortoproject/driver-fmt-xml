@@ -5,8 +5,8 @@
  *      Author: sander
  */
 
-#include "corto/fmt/xml/xml_deser.h"
-#include "corto/fmt/xml/xmlreader.h"
+#include "driver/fmt/xml/xml_deser.h"
+#include "driver/fmt/xml/xmlreader.h"
 
 typedef struct deser_xmldata_s* deser_xmldata;
 typedef struct deser_xmldata_s {

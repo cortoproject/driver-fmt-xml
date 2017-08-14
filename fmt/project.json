@@ -1,5 +1,5 @@
 {
-  "id" : "corto/fmt/xml",
+  "id" : "driver/fmt/xml",
   "type" : "package",
   "value" : {
     "description" : "XML parser for corto",

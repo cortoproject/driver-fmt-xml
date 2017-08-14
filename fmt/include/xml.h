@@ -8,11 +8,11 @@
 #define CORTO_FMT_XML_H
 
 #include <corto/corto.h>
-#include <corto/fmt/xml/_project.h>
+#include <driver/fmt/xml/_project.h>
 
 /* $header() */
-#include "corto/fmt/xml/xmlreader.h"
-#include "corto/fmt/xml/xml_deser.h"
+#include "driver/fmt/xml/xmlreader.h"
+#include "driver/fmt/xml/xml_deser.h"
 /* $end */
 
 /* $body() */

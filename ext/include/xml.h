@@ -8,8 +8,8 @@
 #define CORTO_EXT_XML_H
 
 #include <corto/corto.h>
-#include <corto/ext/xml/_project.h>
-#include <corto/fmt/xml/xml.h>
+#include <driver/ext/xml/_project.h>
+#include <driver/fmt/xml/xml.h>
 
 /* $header() */
 /* Enter additional code here. */
