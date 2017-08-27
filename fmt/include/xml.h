@@ -4,8 +4,8 @@
  * Only modify inside the header-end and body-end sections.
  */
 
-#ifndef CORTO_FMT_XML_H
-#define CORTO_FMT_XML_H
+#ifndef DRIVER_FMT_XML_H
+#define DRIVER_FMT_XML_H
 
 #include <corto/corto.h>
 #include <driver/fmt/xml/_project.h>
