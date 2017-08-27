@@ -8,7 +8,7 @@
 #ifndef CORE_DESERXML_H_
 #define CORE_DESERXML_H_
 
-#include "corto/corto.h"
+#include <corto/corto.h>
 
 int corto_deserXml(corto_string file);
 
