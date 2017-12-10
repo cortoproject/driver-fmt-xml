@@ -1,0 +1,46 @@
+<corto xmlns:corto="http://corto.io/packages/driver/fmt/xml">
+    <corto:package name="foo" url="http://corto.io/doc/corto">
+
+        <struct id="Point">
+            <member id="x" type="int32"/>
+            <member id="y" type="int32"/>
+        </struct>
+
+        <struct id="Line">
+            <member id="start" type="Point"/>
+            <member id="stop" type="Point"/>
+        </struct>
+
+        <struct id="Polygon">
+            <member id="lines" type="list{Line}"/>
+        </struct>
+
+        <Point name="p" x="10" y="20">
+            <Point name="q" x="30" y="40"/>
+        </Point>
+
+        <Line name="l">
+            <start x="10" y="20"/>
+            <stop x="30" y="40"/>
+
+            <Line name="m">
+                <start x="10" y="20"/>
+                <stop x="30" y="40"/>
+            </Line>
+        </Line>
+
+        <Polygon name="poly">
+            <lines>
+                <Line>
+                    <start x="10" y="20"/>
+                    <stop x="30" y="40"/>
+                </Line>
+                <Line>
+                    <start x="50" y="60"/>
+                    <stop x="70" y="80"/>
+                </Line>
+            </lines>
+        </Polygon>
+
+    </corto:package>
+</corto>

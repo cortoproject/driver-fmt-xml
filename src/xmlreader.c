@@ -35,7 +35,7 @@ corto_xmlreader corto_xmlMemoryReaderNew(const char* str, const char* rootElemen
         assert(root);
 
         if (xmlStrcmp(root->name, (const xmlChar*)rootElement)) {
-            corto_seterr("incorrect root element '%s' (expected '%s').", root->name, rootElement);
+            corto_throw("incorrect root element '%s' (expected '%s').", root->name, rootElement);
             xmlFreeDoc(doc);
             doc = 0;
         } else {
@@ -67,7 +67,7 @@ corto_xmlreader corto_xmlreaderNew(const char* file, const char* rootElement) {
         assert(root);
 
         if (xmlStrcmp(root->name, (const xmlChar*)rootElement)) {
-            corto_seterr("incorrect root element '%s' (expected '%s').", root->name, rootElement);
+            corto_throw("incorrect root element '%s' (expected '%s').", root->name, rootElement);
             xmlFreeDoc(doc);
             doc = 0;
         } else {

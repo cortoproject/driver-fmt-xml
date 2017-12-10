@@ -1,12 +1,12 @@
 {
-  "id" : "driver/fmt/xml",
-  "type" : "package",
-  "value" : {
-    "description" : "XML parser for corto",
-    "version" : "1.0.0",
-    "cflags" : ["-Wunused-parameter"],
-    "include" : ["/usr/include/libxml2"],
-    "lib": ["xml2"],
-    "noapi": true
-  }
+    "id": "driver/fmt/xml",
+    "type": "package",
+    "value": {
+        "author": "Sander Mertens",
+        "description": "XML serializer",
+        "managed": false,
+        "include" : ["/usr/include/libxml2"],
+        "lib": ["xml2"],
+        "use": ["corto"]
+    }
 }

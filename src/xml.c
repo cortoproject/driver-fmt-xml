@@ -12,7 +12,7 @@
 /* Enter code outside of main here. */
 /* $end */
 
-int xmlMain(int argc, char *argv[]) {
+int cortomain(int argc, char *argv[]) {
 /* $begin(main) */
     CORTO_UNUSED(argc);
     CORTO_UNUSED(argv);

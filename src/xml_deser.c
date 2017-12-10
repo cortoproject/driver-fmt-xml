@@ -26,7 +26,9 @@ typedef enum corto_deserXmlScope {
     XML_MEMBER
 }corto_deserXmlScope;
 
-#define xml_error(data, ...) corto_error_fl(data->file, data->line, __VA_ARGS__);
+#define FIND(parent, id) corto(parent, id, NULL, NULL, NULL, NULL, -1, 0)
+
+#define xml_error(data, ...) corto_throw_fl(data->file, data->line, __VA_ARGS__);
 #define xml_warning(data, ...) corto_warning_fl(data->file, data->line, __VA_ARGS__);
 
 #define XML_NODE(nodePtr, data) (data)->line = corto_xmlnodeLine(nodePtr); (data)->node = nodePtr;
@@ -202,7 +204,7 @@ int corto_deserXmlCollectionNew(corto_type t, void* o) {
         *((corto_ll*)o) = corto_ll_new();
         break;
     case CORTO_MAP:
-        *((corto_rbtree*)o) = corto_rb_new(((corto_map)ctype)->keyType);
+        *((corto_rb*)o) = corto_rb_new(NULL, NULL);
         break;
     default:
         corto_error("parser error: not a valid collection kind for 'corto_deserXmlCollectionNew'.");
@@ -284,25 +286,25 @@ int corto_deserXmlCollectionInsertElement(corto_xmlnode node, void* o, deser_xml
         break;
     case CORTO_MAP:
         {
-            corto_string key;
+            /*corto_string key;
             corto_void* toValue;
 
-            /* Retrieve key */
-            key = corto_xmlnodeAttrStr(node, "key");
+            / * Retrieve key * /
+            key = corto_xmlnodeAttrStr(node, "key");*/
 
             /* Cast string to key value */
-            if (corto_ptr_cast(corto_primitive(corto_string_o), &key, corto_primitive(corto_rb_keyType(*(corto_rbtree*)data->collection)), &toValue)) {
+            /*if (corto_ptr_cast(corto_primitive(corto_string_o), &key, corto_primitive(corto_rb_keyType(*(corto_rb*)data->collection)), &toValue)) {
                 xml_error(
                   data->data,
                   "transformation from string to primitive map keytype '%s' failed.",
                   corto_fullpath(NULL,
-                      corto_rb_keyType(*(corto_rbtree*)data->collection))
+                      corto_rb_keyType(*(corto_rb*)data->collection))
                 );
                 goto error;
-            }
+            }*/
 
             /* Insert element in map */
-            corto_rb_set(*(corto_rbtree*)data->collection, toValue, o);
+            /*corto_rb_set(*(corto_rb*)data->collection, toValue, o);*/
             break;
         }
     default:
@@ -665,8 +667,7 @@ int corto_deserXmlObject(corto_xmlnode node, corto_string name, corto_string typ
     o = corto_deserXmlDeclare(data, name, t);
     corto_release(t); /* Free reference to t obtained by resolve */
     if (!o) {
-        xml_error(data, "failed to create '%s : %s' (%s)",
-            name, type, corto_lasterr());
+        xml_error(data, "failed to create '%s : %s'", name, type);
         goto error;
     }
     /* Deserialize value */
@@ -678,7 +679,7 @@ int corto_deserXmlObject(corto_xmlnode node, corto_string name, corto_string typ
 
     /* Construct(finalize) object */
     if (corto_define(o)) {
-        xml_error(data, "failed to construct object '%s : %s': %s", name, type, corto_lasterr());
+        xml_error(data, "failed to construct object '%s : %s'", name, type);
         goto error;
     }
 
@@ -788,7 +789,7 @@ int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_t
             name = corto_xmlnodeAttrStr(node, "name");
 
             /* first try to resolve scope */
-            s = corto_find(data->scope, name, CORTO_FIND_DEFAULT);
+            s = FIND(data->scope, name);
             if (!s) {
                 if (!strcmp(oper, "package")) {
                     s = corto_declareChild(data->scope, name, corto_package_o);
@@ -921,7 +922,7 @@ int corto_deserXml(corto_string file) {
         data.using = corto_ll_new();
 
         if (!corto_xmlnodeWalkChildren(data.node, (corto_xmlreaderWalkCallback)corto_deserXmlNode, &data)) {
-            corto_seterr("error(s) occurred while parsing");
+            corto_throw("error(s) occurred while parsing");
             goto error;
         }
 
