@@ -769,7 +769,7 @@ int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_t
     } else if (!strcmp(oper, "include")) {
         corto_string filename = corto_xmlnodeAttrStr(node, "file");
         if (filename) {
-            corto_load(filename, 0, NULL);
+            corto_use(filename, 0, NULL);
             free(filename);
         } else {
             xml_error(data, "missing 'file' attribute for corto:include.");
