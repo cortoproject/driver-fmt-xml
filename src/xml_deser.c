@@ -26,7 +26,7 @@ typedef enum corto_deserXmlScope {
     XML_MEMBER
 }corto_deserXmlScope;
 
-#define FIND(parent, id) corto(parent, id, NULL, NULL, NULL, NULL, -1, 0)
+#define FIND(p, i) corto(CORTO_LOOKUP, {.parent = p, .id = i})
 
 #define xml_error(data, ...) corto_throw_fl(data->file, data->line, __VA_ARGS__);
 #define xml_warning(data, ...) corto_warning_fl(data->file, data->line, __VA_ARGS__);
