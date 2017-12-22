@@ -26,7 +26,7 @@ typedef enum corto_deserXmlScope {
     XML_MEMBER
 }corto_deserXmlScope;
 
-#define FIND(parent, id) corto(parent, id, NULL, NULL, NULL, NULL, -1, 0)
+#define FIND(p, i) corto(CORTO_LOOKUP, {.parent = p, .id = i})
 
 #define xml_error(data, ...) corto_throw_fl(data->file, data->line, __VA_ARGS__);
 #define xml_warning(data, ...) corto_warning_fl(data->file, data->line, __VA_ARGS__);
@@ -118,7 +118,7 @@ void corto_deserXmlDataFree(deser_xmldata data) {
 
 /* (Forward) declare object */
 corto_object corto_deserXmlDeclare(deser_xmldata data, corto_string name, corto_type t) {
-    return corto_declareChild(data->scope, name, t);;
+    return corto_declare(data->scope, name, t);;
 }
 
 /* Deserialize reference */
@@ -352,7 +352,7 @@ int corto_deserXmlElement(corto_xmlnode node, deser_xmlElementData* userData) {
         }
 
     /* Element subtype is used as tagname */
-    } else if (corto_checkAttr(subtype, CORTO_ATTR_NAMED) && !strcmp(corto_idof(subtype), corto_xmlnodeName(node))) {
+    } else if (corto_check_attr(subtype, CORTO_ATTR_NAMED) && !strcmp(corto_idof(subtype), corto_xmlnodeName(node))) {
         deser_xmldata_s privateData;
 
         privateData = corto_deserXmlDataClone(userData->data);
@@ -491,7 +491,7 @@ corto_string corto_deserXmlIsInlinedElement(corto_string type, deser_xmlMemberDa
         m = s->members.buffer[i];
         if (m->type->kind == CORTO_COLLECTION) {
             subtype = ((corto_collection)m->type)->elementType;
-            if (corto_checkAttr(subtype, CORTO_ATTR_NAMED) && !strcmp(corto_idof(subtype), type)) {
+            if (corto_check_attr(subtype, CORTO_ATTR_NAMED) && !strcmp(corto_idof(subtype), type)) {
                 result = corto_idof(s->members.buffer[i]);
                 break;
 
@@ -792,12 +792,12 @@ int corto_deserXmlMetaExt(corto_xmlnode node, corto_deserXmlScope scope, corto_t
             s = FIND(data->scope, name);
             if (!s) {
                 if (!strcmp(oper, "package")) {
-                    s = corto_declareChild(data->scope, name, corto_package_o);
+                    s = corto_declare(data->scope, name, corto_package_o);
                     corto_claim(s);
                     corto_package(s)->url = corto_xmlnodeAttrStr(node, "url");
                     corto_define(s);
                 } else {
-                    s = corto_declareChild(data->scope, name, corto_void_o);
+                    s = corto_declare(data->scope, name, corto_void_o);
                     corto_claim(s);
                 }
             }
