@@ -17,7 +17,10 @@ typedef struct corto_xmlreader_s {
 }corto_xmlreader_s;
 
 /* Open xml memory */
-corto_xmlreader corto_xmlMemoryReaderNew(const char* str, const char* rootElement) {
+corto_xmlreader corto_xmlMemoryReaderNew(
+    const char* str,
+    const char* rootElement)
+{
     xmlDocPtr doc;
     xmlNodePtr root;
     corto_xmlreader reader;
@@ -35,7 +38,10 @@ corto_xmlreader corto_xmlMemoryReaderNew(const char* str, const char* rootElemen
         assert(root);
 
         if (xmlStrcmp(root->name, (const xmlChar*)rootElement)) {
-            corto_throw("incorrect root element '%s' (expected '%s').", root->name, rootElement);
+            corto_throw(
+                "incorrect root element '%s' (expected '%s').",
+                root->name,
+                rootElement);
             xmlFreeDoc(doc);
             doc = 0;
         } else {
@@ -49,7 +55,10 @@ corto_xmlreader corto_xmlMemoryReaderNew(const char* str, const char* rootElemen
 }
 
 /* Open xml file */
-corto_xmlreader corto_xmlreaderNew(const char* file, const char* rootElement) {
+corto_xmlreader corto_xmlreaderNew(
+    const char* file,
+    const char* rootElement)
+{
     xmlDocPtr doc;
     xmlNodePtr root;
     corto_xmlreader reader;
@@ -67,7 +76,10 @@ corto_xmlreader corto_xmlreaderNew(const char* file, const char* rootElement) {
         assert(root);
 
         if (xmlStrcmp(root->name, (const xmlChar*)rootElement)) {
-            corto_throw("incorrect root element '%s' (expected '%s').", root->name, rootElement);
+            corto_throw(
+                "incorrect root element '%s' (expected '%s').",
+                root->name,
+                rootElement);
             xmlFreeDoc(doc);
             doc = 0;
         } else {
@@ -81,20 +93,26 @@ corto_xmlreader corto_xmlreaderNew(const char* file, const char* rootElement) {
 }
 
 /* Close xml file */
-void corto_xmlreaderFree(corto_xmlreader reader) {
+void corto_xmlreaderFree(
+    corto_xmlreader reader)
+{
     xmlFreeDoc(reader->doc);
     /*xmlCleanupParser();*/
     free(reader);
 }
 
 /* Get name of node */
-const char* corto_xmlnodeName(corto_xmlnode cnode) {
+const char* corto_xmlnodeName(
+    corto_xmlnode cnode)
+{
     xmlNodePtr node = (xmlNodePtr)cnode;
     return (const char*)node->name;
 }
 
 /* Get namespace of node */
-const char* corto_xmlnodeNs(corto_xmlnode cnode) {
+const char* corto_xmlnodeNs(
+    corto_xmlnode cnode)
+{
     xmlNodePtr node = (xmlNodePtr)cnode;
     if (node->ns) {
         return (const char*)node->ns->prefix;
@@ -104,7 +122,9 @@ const char* corto_xmlnodeNs(corto_xmlnode cnode) {
 }
 
 /* Get parent of node */
-corto_xmlnode corto_xmlnodeParent(corto_xmlnode cnode) {
+corto_xmlnode corto_xmlnodeParent(
+    corto_xmlnode cnode)
+{
     xmlNodePtr node = (xmlNodePtr)cnode;
     if (node->parent) {
         return (corto_xmlnode)node->parent;
@@ -114,13 +134,17 @@ corto_xmlnode corto_xmlnodeParent(corto_xmlnode cnode) {
 }
 
 /* Get linenumber of node */
-short int corto_xmlnodeLine(corto_xmlnode cnode) {
+short int corto_xmlnodeLine(
+    corto_xmlnode cnode)
+{
     xmlNodePtr node = (xmlNodePtr)cnode;
     return node->line;
 }
 
 /* Get content of node */
-char* corto_xmlnodeContent(corto_xmlnode cnode) {
+char* corto_xmlnodeContent(
+    corto_xmlnode cnode)
+{
     xmlNodePtr node = (xmlNodePtr)cnode;
     if (node->type == XML_TEXT_NODE) {
         return (char*)node->content;
@@ -130,12 +154,17 @@ char* corto_xmlnodeContent(corto_xmlnode cnode) {
 }
 
 /* Get root of doc */
-corto_xmlnode corto_xmlreaderRoot(corto_xmlreader reader) {
+corto_xmlnode corto_xmlreaderRoot(
+    corto_xmlreader reader)
+{
     return (corto_xmlnode)reader->root;
 }
 
 /* Find element in node */
-corto_xmlnode corto_xmlnodeFind(corto_xmlnode cnode, const char* element) {
+corto_xmlnode corto_xmlnodeFind(
+    corto_xmlnode cnode,
+    const char* element)
+{
     xmlNodePtr p;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
@@ -150,7 +179,10 @@ corto_xmlnode corto_xmlnodeFind(corto_xmlnode cnode, const char* element) {
 }
 
 /* Load int */
-int corto_xmlnodeInt(corto_xmlnode cnode, int* out) {
+int corto_xmlnodeInt(
+    corto_xmlnode cnode,
+    int* out)
+{
     char* str;
     int result;
     xmlNodePtr node = (xmlNodePtr)cnode;
@@ -169,7 +201,10 @@ int corto_xmlnodeInt(corto_xmlnode cnode, int* out) {
 }
 
 /* Load unsigned int */
-int corto_xmlnodeUint(corto_xmlnode cnode, unsigned int* out) {
+int corto_xmlnodeUint(
+    corto_xmlnode cnode,
+    unsigned int* out)
+{
     char* str;
     int result;
     xmlNodePtr node = (xmlNodePtr)cnode;
@@ -188,7 +223,10 @@ int corto_xmlnodeUint(corto_xmlnode cnode, unsigned int* out) {
 }
 
 /* Load int */
-float corto_xmlnodeFloat(corto_xmlnode cnode, float* out) {
+float corto_xmlnodeFloat(
+    corto_xmlnode cnode,
+    float* out)
+{
     char* str;
     float result;
     xmlNodePtr node = (xmlNodePtr)cnode;
@@ -207,7 +245,10 @@ float corto_xmlnodeFloat(corto_xmlnode cnode, float* out) {
 }
 
 /* Load boolean */
-int corto_xmlnodeBool(corto_xmlnode cnode, unsigned int* out) {
+int corto_xmlnodeBool(
+    corto_xmlnode cnode,
+    unsigned int* out)
+{
     char* str;
     int result;
     xmlNodePtr node = (xmlNodePtr)cnode;
@@ -233,7 +274,9 @@ int corto_xmlnodeBool(corto_xmlnode cnode, unsigned int* out) {
 }
 
 /* Load string */
-char* corto_xmlnodeStr(corto_xmlnode cnode) {
+char* corto_xmlnodeStr(
+    corto_xmlnode cnode)
+{
     char* str;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
@@ -243,12 +286,19 @@ char* corto_xmlnodeStr(corto_xmlnode cnode) {
 }
 
 /* Load char */
-int corto_xmlnodeAttrChar(corto_xmlnode cnode, const char* attribute, char* out) {
+int corto_xmlnodeAttrChar(
+    corto_xmlnode cnode,
+    const char* attribute,
+    char* out)
+{
     char* str;
     char result;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
-    corto_assert(out != 0, "Invalid out parameter.", "corto_xmlnodeAttrChar: Invalid out parameter.");
+    corto_assert(
+        out != 0,
+        "Invalid out parameter.",
+        "corto_xmlnodeAttrChar: Invalid out parameter.");
 
     result = -1;
 
@@ -263,7 +313,11 @@ int corto_xmlnodeAttrChar(corto_xmlnode cnode, const char* attribute, char* out)
 }
 
 /* Load int from attribute */
-int corto_xmlnodeAttrInt(corto_xmlnode cnode, const char* attribute, int* out) {
+int corto_xmlnodeAttrInt(
+    corto_xmlnode cnode,
+    const char* attribute,
+    int* out)
+{
     char* str;
     int result;
     xmlNodePtr node = (xmlNodePtr)cnode;
@@ -283,7 +337,11 @@ int corto_xmlnodeAttrInt(corto_xmlnode cnode, const char* attribute, int* out) {
 }
 
 /* Load unsigned int from attribute */
-int corto_xmlnodeAttrUint(corto_xmlnode cnode, const char* attribute, unsigned int* out) {
+int corto_xmlnodeAttrUint(
+    corto_xmlnode cnode,
+    const char* attribute,
+    unsigned int* out)
+{
     char* str;
     int result;
     xmlNodePtr node = (xmlNodePtr)cnode;
@@ -303,7 +361,11 @@ int corto_xmlnodeAttrUint(corto_xmlnode cnode, const char* attribute, unsigned i
 }
 
 /* Load float from attribute */
-float corto_xmlnodeAttrFloat(corto_xmlnode cnode, const char* attribute, float* out) {
+float corto_xmlnodeAttrFloat(
+    corto_xmlnode cnode,
+    const char* attribute,
+    float* out)
+{
     char* str;
     float result;
     xmlNodePtr node = (xmlNodePtr)cnode;
@@ -322,7 +384,11 @@ float corto_xmlnodeAttrFloat(corto_xmlnode cnode, const char* attribute, float* 
     return result;
 }
 /* Load boolean from attribute */
-int corto_xmlnodeAttrBool(corto_xmlnode cnode, const char* attribute, unsigned int* out) {
+int corto_xmlnodeAttrBool(
+    corto_xmlnode cnode,
+    const char* attribute,
+    unsigned int* out)
+{
     char* str;
     int result;
     xmlNodePtr node = (xmlNodePtr)cnode;
@@ -334,9 +400,17 @@ int corto_xmlnodeAttrBool(corto_xmlnode cnode, const char* attribute, unsigned i
     str = (char*)xmlGetProp(node, (xmlChar*)attribute);
     if (str) {
         result = 0;
-        if (!strcmp("true", str) || !strcmp("TRUE", str) || !strcmp("True", str)) {
+        if (
+            !strcmp("true", str) ||
+            !strcmp("TRUE", str) ||
+            !strcmp("True", str))
+        {
             *out = 1;
-        } else if (!strcmp("false", str) || !strcmp("FALSE", str) || !strcmp("False", str)) {
+        } else if (
+            !strcmp("false", str) ||
+            !strcmp("FALSE", str) ||
+            !strcmp("False", str))
+        {
             *out = 0;
         } else {
             result = -1;
@@ -348,7 +422,10 @@ int corto_xmlnodeAttrBool(corto_xmlnode cnode, const char* attribute, unsigned i
 }
 
 /* Load string from attribute */
-char* corto_xmlnodeAttrStr(corto_xmlnode cnode, const char* attribute) {
+char* corto_xmlnodeAttrStr(
+    corto_xmlnode cnode,
+    const char* attribute)
+{
     char* str;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
@@ -358,7 +435,10 @@ char* corto_xmlnodeAttrStr(corto_xmlnode cnode, const char* attribute) {
 }
 
 /* Test for attribute */
-int corto_xmlnodeAttrTest(corto_xmlnode cnode, const char* attribute) {
+int corto_xmlnodeAttrTest(
+    corto_xmlnode cnode,
+    const char* attribute)
+{
     char* str;
     int result;
     xmlNodePtr node = (xmlNodePtr)cnode;
@@ -374,7 +454,11 @@ int corto_xmlnodeAttrTest(corto_xmlnode cnode, const char* attribute) {
 }
 
 /* Walk attributes */
-int corto_xmlnodeWalkAttr(corto_xmlnode cnode, corto_xmlreaderWalkAttrCallback callback, void* userData) {
+int corto_xmlnodeWalkAttr(
+    corto_xmlnode cnode,
+    corto_xmlreaderWalkAttrCallback callback,
+    void* userData)
+{
     xmlNodePtr node = (xmlNodePtr)cnode;
     xmlAttrPtr attr;
     int result;
@@ -386,7 +470,11 @@ int corto_xmlnodeWalkAttr(corto_xmlnode cnode, corto_xmlreaderWalkAttrCallback c
         attr = node->properties;
 
         while(result && attr) {
-            result = callback((corto_string)attr->ns, (corto_string)attr->name, (corto_string)attr->children->content, userData);
+            result = callback(
+                (corto_string)attr->ns,
+                (corto_string)attr->name,
+                (corto_string)attr->children->content,
+                userData);
             attr = attr->next;
         }
     }
@@ -395,13 +483,21 @@ int corto_xmlnodeWalkAttr(corto_xmlnode cnode, corto_xmlreaderWalkAttrCallback c
 }
 
 /* Walk children */
-int corto_xmlnodeWalkChildren(corto_xmlnode cnode, corto_xmlreaderWalkCallback callback, void* userData) {
+int corto_xmlnodeWalkChildren(
+    corto_xmlnode cnode,
+    corto_xmlreaderWalkCallback callback,
+    void* userData)
+{
     xmlNodePtr node = (xmlNodePtr)cnode;
     return corto_xmlnodeWalk(node->xmlChildrenNode, callback, userData);
 }
 
 /* Walk xml */
-int corto_xmlnodeWalk(corto_xmlnode cnode, corto_xmlreaderWalkCallback callback, void* userData) {
+int corto_xmlnodeWalk(
+    corto_xmlnode cnode,
+    corto_xmlreaderWalkCallback callback,
+    void* userData)
+{
     int result = 1;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
@@ -417,7 +513,11 @@ int corto_xmlnodeWalk(corto_xmlnode cnode, corto_xmlreaderWalkCallback callback,
     return result;
 }
 
-int corto_xmlnodeWalkAll(corto_xmlnode cnode, corto_xmlreaderWalkCallback* callbacks, void* userData) {
+int corto_xmlnodeWalkAll(
+    corto_xmlnode cnode,
+    corto_xmlreaderWalkCallback* callbacks,
+    void* userData)
+{
     int result = 1;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
@@ -432,11 +532,13 @@ int corto_xmlnodeWalkAll(corto_xmlnode cnode, corto_xmlreaderWalkCallback* callb
         node = node->next;
     }
 
-    return result;    
+    return result;
 }
 
 /* Count children of node */
-int corto_xmlnodeChildrenCount(corto_xmlnode cnode) {
+int corto_xmlnodeChildrenCount(
+    corto_xmlnode cnode)
+{
     int n = 0;
     xmlNodePtr child;
     xmlNodePtr node = (xmlNodePtr)cnode;
@@ -452,7 +554,10 @@ int corto_xmlnodeChildrenCount(corto_xmlnode cnode) {
     return n;
 }
 
-corto_xmlnode corto_xmlnodeGetChild(corto_xmlnode cnode, unsigned int childnode) {
+corto_xmlnode corto_xmlnodeGetChild(
+    corto_xmlnode cnode,
+    unsigned int childnode)
+{
     unsigned int n = 0;
     xmlNodePtr child;
     xmlNodePtr node = (xmlNodePtr)cnode;
