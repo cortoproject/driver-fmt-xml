@@ -31,11 +31,13 @@ typedef enum corto_deserXmlScope {
 #define xml_warning(data, ...) corto_warning_fl(data->file, data->line, __VA_ARGS__);
 #define XML_NODE(nodePtr, data) (data)->line = corto_xmlnodeLine(nodePtr); (data)->node = nodePtr;
 
+static
 int corto_deserXmlMeta(
     corto_xmlnode node,
     corto_deserXmlScope scope,
     deser_xmldata data);
 
+static
 int corto_deserXmlMetaExt(
     corto_xmlnode node,
     corto_deserXmlScope scope,
@@ -43,6 +45,7 @@ int corto_deserXmlMetaExt(
     void* o,
     deser_xmldata data);
 
+static
 int corto_deserXmlValue(
     corto_xmlnode node,
     corto_deserXmlScope scope,
@@ -50,6 +53,7 @@ int corto_deserXmlValue(
     void* o,
     deser_xmldata data);
 
+static
 int corto_deserXmlNode(
     corto_xmlnode node,
     deser_xmldata data);
