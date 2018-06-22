@@ -8,7 +8,6 @@
 #define DRIVER_FMT_XML_H
 
 #include <corto/corto.h>
-#include <driver/fmt/xml/_project.h>
 
 /* $header() */
 #include "driver/fmt/xml/xmlreader.h"
@@ -20,4 +19,3 @@
 /* $end */
 
 #endif
-
