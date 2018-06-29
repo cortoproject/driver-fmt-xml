@@ -313,10 +313,10 @@ void* corto_deserXmlCollectionNewElement(
     void* result;
 
     ctype = (corto_collection)data->t;
-    elementSize = corto_type_sizeof(ctype->elementType);
+    elementSize = corto_type_sizeof(ctype->element_type);
     result = 0;
 
-    corto_assert(elementSize, "collection has elementType of size 0.");
+    corto_assert(elementSize, "collection has element_type of size 0.");
 
     switch(ctype->kind) {
     case CORTO_ARRAY:
@@ -379,12 +379,12 @@ int corto_deserXmlCollectionInsertElement(
             key = corto_xmlnodeAttrStr(node, "key");*/
 
             /* Cast string to key value */
-            /*if (corto_ptr_cast(corto_primitive(corto_string_o), &key, corto_primitive(corto_rb_keyType(*(corto_rb*)data->collection)), &toValue)) {
+            /*if (corto_ptr_cast(corto_primitive(corto_string_o), &key, corto_primitive(corto_rb_key_type(*(corto_rb*)data->collection)), &toValue)) {
                 xml_error(
                   data->data,
                   "transformation from string to primitive map keytype '%s' failed.",
                   corto_fullpath(NULL,
-                      corto_rb_keyType(*(corto_rb*)data->collection))
+                      corto_rb_key_type(*(corto_rb*)data->collection))
                 );
                 goto error;
             }*/
@@ -418,7 +418,7 @@ int corto_deserXmlElement(
     XML_NODE(node, userData->data);
 
     ctype = (corto_collection)userData->t;
-    subtype = ((corto_collection)ctype)->elementType;
+    subtype = ((corto_collection)ctype)->element_type;
 
     /* Check if element belongs to collection */
     if (corto_xmlnodeNs(node) && !strcmp(corto_xmlnodeNs(node), "corto")) {
@@ -446,7 +446,7 @@ int corto_deserXmlElement(
             } else {
                 xml_error(
                     userData->data,
-"invalid corto-tag for element (expected 'corto:object', 'corto:element' or elementType name).");
+"invalid corto-tag for element (expected 'corto:object', 'corto:element' or element_type name).");
                 goto error;
             }
         }
@@ -574,7 +574,7 @@ int corto_deserXmlAttrWalk(
     }
 
     /* Lookup member */
-    member = corto_interface_resolveMember(corto_interface(userData->t), attr);
+    member = corto_interface_resolve_member(corto_interface(userData->t), attr);
     if (member) {
         t = member->type;
         /* Check if member is of a primitive type */
@@ -629,7 +629,7 @@ corto_string corto_deserXmlIsInlinedElement(
     for(i=0; i<s->members.length; i++) {
         m = s->members.buffer[i];
         if (m->type->kind == CORTO_COLLECTION) {
-            subtype = ((corto_collection)m->type)->elementType;
+            subtype = ((corto_collection)m->type)->element_type;
             if (corto_check_attr(subtype, CORTO_ATTR_NAMED) &&
                 !strcmp(corto_idof(subtype), type))
             {
@@ -728,7 +728,7 @@ int corto_deserXmlMemberWalk(
     } else {
 
         /* Lookup member */
-        member = corto_interface_resolveMember(
+        member = corto_interface_resolve_member(
             corto_interface(userData->t),
             (corto_string)corto_xmlnodeName(node));
         if (member) {
