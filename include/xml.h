@@ -7,15 +7,8 @@
 #ifndef DRIVER_FMT_XML_H
 #define DRIVER_FMT_XML_H
 
-#include <corto/corto.h>
-
-/* $header() */
-#include "driver/fmt/xml/xmlreader.h"
-#include "driver/fmt/xml/xml_deser.h"
-/* $end */
-
-/* $body() */
-/* Enter code that requires types here */
-/* $end */
+#include "bake_config.h"
+#include "xmlreader.h"
+#include "xml_deser.h"
 
 #endif

@@ -1,12 +1,13 @@
 {
-    "id": "driver/fmt/xml",
+    "id": "driver.fmt.xml",
     "type": "package",
     "value": {
         "author": "Sander Mertens",
         "description": "XML serializer",
-        "managed": false,
-        "include" : ["/usr/include/libxml2"],
-        "lib": ["xml2"],
         "use": ["corto"]
+    },
+    "lang.c": {
+        "include" : ["/usr/include/libxml2"],
+        "lib": ["xml2"]
     }
 }
