@@ -5,11 +5,10 @@
  *      Author: sander
  */
 
-#include <corto/corto.h>
 #include "libxml/xmlreader.h"
-#include "driver/fmt/xml/xmlreader.h"
+#include <driver.fmt.xml>
 
-static corto_bool xml_initialized = FALSE;
+static bool xml_initialized = FALSE;
 
 typedef struct corto_xmlreader_s {
     xmlDocPtr doc;
@@ -38,7 +37,7 @@ corto_xmlreader corto_xmlMemoryReaderNew(
         assert(root);
 
         if (xmlStrcmp(root->name, (const xmlChar*)rootElement)) {
-            corto_throw(
+            ut_throw(
                 "incorrect root element '%s' (expected '%s').",
                 root->name,
                 rootElement);
@@ -76,7 +75,7 @@ corto_xmlreader corto_xmlreaderNew(
         assert(root);
 
         if (xmlStrcmp(root->name, (const xmlChar*)rootElement)) {
-            corto_throw(
+            ut_throw(
                 "incorrect root element '%s' (expected '%s').",
                 root->name,
                 rootElement);
@@ -187,7 +186,7 @@ int corto_xmlnodeInt(
     int result;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
-    corto_assert(out != 0, "Invalid out parameter.");
+    ut_assert(out != 0, "Invalid out parameter.");
 
     result = -1;
 
@@ -209,7 +208,7 @@ int corto_xmlnodeUint(
     int result;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
-    corto_assert(out != 0, "Invalid out parameter.");
+    ut_assert(out != 0, "Invalid out parameter.");
 
     result = -1;
 
@@ -231,7 +230,7 @@ float corto_xmlnodeFloat(
     float result;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
-    corto_assert(out != 0, "Invalid out parameter.");
+    ut_assert(out != 0, "Invalid out parameter.");
 
     result = -1;
 
@@ -253,7 +252,7 @@ int corto_xmlnodeBool(
     int result;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
-    corto_assert(out != 0, "Invalid out parameter.");
+    ut_assert(out != 0, "Invalid out parameter.");
 
     result = -1;
 
@@ -295,7 +294,7 @@ int corto_xmlnodeAttrChar(
     char result;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
-    corto_assert(
+    ut_assert(
         out != 0,
         "Invalid out parameter.",
         "corto_xmlnodeAttrChar: Invalid out parameter.");
@@ -322,7 +321,7 @@ int corto_xmlnodeAttrInt(
     int result;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
-    corto_assert(out != 0, "Invalid out parameter.");
+    ut_assert(out != 0, "Invalid out parameter.");
 
     result = -1;
 
@@ -346,7 +345,7 @@ int corto_xmlnodeAttrUint(
     int result;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
-    corto_assert(out != 0, "Invalid out parameter.");
+    ut_assert(out != 0, "Invalid out parameter.");
 
     result = -1;
 
@@ -370,7 +369,7 @@ float corto_xmlnodeAttrFloat(
     float result;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
-    corto_assert(out != 0, "Invalid out parameter.");
+    ut_assert(out != 0, "Invalid out parameter.");
 
     result = -1;
 
@@ -393,7 +392,7 @@ int corto_xmlnodeAttrBool(
     int result;
     xmlNodePtr node = (xmlNodePtr)cnode;
 
-    corto_assert(out != 0, "Invalid out parameter.");
+    ut_assert(out != 0, "Invalid out parameter.");
 
     result = -1;
 

@@ -5,8 +5,7 @@
  *      Author: sander
  */
 
-#include "driver/fmt/xml/xml_deser.h"
-#include "driver/fmt/xml/xmlreader.h"
+#include <driver.fmt.xml>
 
 typedef struct deser_xmldata_s* deser_xmldata;
 typedef struct deser_xmldata_s {
@@ -16,8 +15,8 @@ typedef struct deser_xmldata_s {
     corto_object cur;
     corto_string file;
     corto_uint32 line;
-    corto_ll attrParsed;
-    corto_ll using;
+    ut_ll attrParsed;
+    ut_ll using;
 } deser_xmldata_s;
 
 typedef enum corto_deserXmlScope {
@@ -27,8 +26,8 @@ typedef enum corto_deserXmlScope {
 }corto_deserXmlScope;
 
 #define FIND(p, i) corto(CORTO_LOOKUP, {.parent = p, .id = i})
-#define xml_error(data, ...) corto_throw_fl(data->file, data->line, __VA_ARGS__);
-#define xml_warning(data, ...) corto_warning_fl(data->file, data->line, __VA_ARGS__);
+#define xml_error(data, ...) ut_throw_fl(data->file, data->line, __VA_ARGS__);
+#define xml_warning(data, ...) ut_warning_fl(data->file, data->line, __VA_ARGS__);
 #define XML_NODE(nodePtr, data) (data)->line = corto_xmlnodeLine(nodePtr); (data)->node = nodePtr;
 
 static
@@ -65,9 +64,9 @@ void corto_deserXmlMemberSet(
     deser_xmldata data)
 {
     if (!data->attrParsed) {
-        data->attrParsed = corto_ll_new();
+        data->attrParsed = ut_ll_new();
     }
-    corto_ll_insert(data->attrParsed, name);
+    ut_ll_insert(data->attrParsed, name);
 }
 
 /* Check if attribute is parsed */
@@ -78,7 +77,7 @@ int corto_deserXmlMemberCheck(
 {
     if (data->attrParsed) {
         corto_string result = (corto_string)
-            corto_ll_find(data->attrParsed, (corto_elementWalk_cb)strcmp, name);
+            ut_ll_find(data->attrParsed, (ut_elementWalk_cb)strcmp, name);
         return result != 0;
     } else {
         return 0;
@@ -93,14 +92,14 @@ void corto_deserXmlNsUse(
 {
     corto_object o;
     if (!data->using) {
-        data->using = corto_ll_new();
+        data->using = ut_ll_new();
     }
 
     o = corto_lookup(data->scope, ns);
     if (!o) {
         xml_error(data, "namespace '%s' unresolved.", ns);
     } else {
-        corto_ll_append(data->using, o);
+        ut_ll_append(data->using, o);
         corto_release(o);
     }
 }
@@ -119,11 +118,11 @@ corto_object corto_deserXmlNsResolve(
     o = corto_resolve(data->scope, name);
     if (!o) {
         if (data->using) {
-            corto_iter iter;
+            ut_iter iter;
 
-            iter = corto_ll_iter(data->using);
-            while(!o && corto_iter_hasNext(&iter)) {
-                ns = corto_iter_next(&iter);
+            iter = ut_ll_iter(data->using);
+            while(!o && ut_iter_hasNext(&iter)) {
+                ns = ut_iter_next(&iter);
                 o = corto_lookup(ns, name);
             }
         }
@@ -152,7 +151,7 @@ void corto_deserXmlDataFree(
     deser_xmldata data)
 {
     if (data->attrParsed) {
-        corto_ll_free(data->attrParsed);
+        ut_ll_free(data->attrParsed);
         /* Will crash if attempts are made to dereference it */
         data->attrParsed = (void*)-1;
     }
@@ -278,13 +277,13 @@ int corto_deserXmlCollectionNew(
         ((corto_objectseq*)o)->buffer = 0;
         break;
     case CORTO_LIST:
-        *((corto_ll*)o) = corto_ll_new();
+        *((ut_ll*)o) = ut_ll_new();
         break;
     case CORTO_MAP:
-        *((corto_rb*)o) = corto_rb_new(NULL, NULL);
+        *((ut_rb*)o) = ut_rb_new(NULL, NULL);
         break;
     default:
-        corto_error(
+        ut_error(
 "parser error: not a valid collection kind for 'corto_deserXmlCollectionNew'.");
         goto error;
     }
@@ -316,7 +315,7 @@ void* corto_deserXmlCollectionNewElement(
     elementSize = corto_type_sizeof(ctype->element_type);
     result = 0;
 
-    corto_assert(elementSize, "collection has element_type of size 0.");
+    ut_assert(elementSize, "collection has element_type of size 0.");
 
     switch(ctype->kind) {
     case CORTO_ARRAY:
@@ -368,7 +367,7 @@ int corto_deserXmlCollectionInsertElement(
         break;
     case CORTO_LIST:
         /* Insert element in list */
-        corto_ll_append(*(corto_ll*)data->collection, o);
+        ut_ll_append(*(ut_ll*)data->collection, o);
         break;
     case CORTO_MAP:
         {
@@ -379,18 +378,18 @@ int corto_deserXmlCollectionInsertElement(
             key = corto_xmlnodeAttrStr(node, "key");*/
 
             /* Cast string to key value */
-            /*if (corto_ptr_cast(corto_primitive(corto_string_o), &key, corto_primitive(corto_rb_key_type(*(corto_rb*)data->collection)), &toValue)) {
+            /*if (corto_ptr_cast(corto_primitive(corto_string_o), &key, corto_primitive(ut_rb_key_type(*(ut_rb*)data->collection)), &toValue)) {
                 xml_error(
                   data->data,
                   "transformation from string to primitive map keytype '%s' failed.",
                   corto_fullpath(NULL,
-                      corto_rb_key_type(*(corto_rb*)data->collection))
+                      ut_rb_key_type(*(ut_rb*)data->collection))
                 );
                 goto error;
             }*/
 
             /* Insert element in map */
-            /*corto_rb_set(*(corto_rb*)data->collection, toValue, o);*/
+            /*ut_rb_set(*(ut_rb*)data->collection, toValue, o);*/
             break;
         }
     default:
@@ -745,7 +744,7 @@ int corto_deserXmlMemberWalk(
                 goto error;
             }
             if (privateData.attrParsed) {
-                corto_ll_free(privateData.attrParsed);
+                ut_ll_free(privateData.attrParsed);
             }
         } else {
             if (corto_deserXmlInlinedMember(
@@ -990,7 +989,7 @@ int corto_deserXmlMetaExt(
     } else if (!strcmp(oper, "include")) {
         corto_string filename = corto_xmlnodeAttrStr(node, "file");
         if (filename) {
-            corto_use(filename, 0, NULL);
+            ut_use(filename, 0, NULL);
             free(filename);
         } else {
             xml_error(data, "missing 'file' attribute for corto:include.");
@@ -1158,23 +1157,23 @@ int corto_deserXml(corto_string file) {
         data.file = file;
         data.line = 0;
         data.attrParsed = 0;
-        data.using = corto_ll_new();
+        data.using = ut_ll_new();
 
         if (!corto_xmlnodeWalkChildren(
             data.node,
             (corto_xmlreaderWalkCallback)corto_deserXmlNode,
             &data))
         {
-            corto_throw("error(s) occurred while parsing");
+            ut_throw("error(s) occurred while parsing");
             goto error;
         }
 
         /* Free using */
-        corto_ll_free(data.using);
+        ut_ll_free(data.using);
 
         /* Free attrParsed */
         if (data.attrParsed) {
-            corto_ll_free(data.attrParsed);
+            ut_ll_free(data.attrParsed);
         };
 
         /* Free reader */

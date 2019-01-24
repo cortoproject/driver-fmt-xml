@@ -6,7 +6,7 @@
  * when the file is regenerated.
  */
 
-#include <driver/fmt/xml/xml.h>
+#include <driver.fmt.xml>
 
 int cortomain(int argc, char *argv[]) {
     CORTO_UNUSED(argc);
